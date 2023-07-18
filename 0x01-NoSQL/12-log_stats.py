@@ -26,11 +26,11 @@ def printLog():
     """Prints the stats about Nginx stored in mongodb"""
     print(f"{nginx.count()} logs")
     print("Methods:")
-    print(f'    method GET: {nginx.find({"method": "GET"}).count()}')
-    print(f'    method POST: {nginx.find({"method": "POST"}).count()}')
-    print(f'    method PUT: {nginx.find({"method": "PUT"}).count()}')
-    print(f'    method PATCH: {nginx.find({"method": "PATCH"}).count()}')
-    print(f'    method DELETE: {nginx.find({"method": "DELETE"}).count()}')
+    print(f'\tmethod GET: {nginx.find({"method": "GET"}).count()}')
+    print(f'\tmethod POST: {nginx.find({"method": "POST"}).count()}')
+    print(f'\tmethod PUT: {nginx.find({"method": "PUT"}).count()}')
+    print(f'\tmethod PATCH: {nginx.find({"method": "PATCH"}).count()}')
+    print(f'\tmethod DELETE: {nginx.find({"method": "DELETE"}).count()}')
     print(f'{nginx.find({"method": "GET", "path": "/status"}).count()}'
           f' status check')
 
