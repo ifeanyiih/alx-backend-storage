@@ -34,8 +34,7 @@ def printLog():
     print(f'{nginx.find({"method": "GET", "path": "/status"}).count()}'
           f' status check')
     print("IPs:")
-    ips = nginx.aggregate([{"$group": {"_id": "$ip", "count": {"$sum": 1}}},
-                          {"$sort": {"count": -1, "_id": -1}}, {"$limit": 10}])
+    ips = nginx.aggregate([{"$sortByCount": "$ip"}, {"$limit": 10}])
     for doc in ips:
         print(f'\t{doc.get("_id")}: {doc.get("count")}')
 
