@@ -7,8 +7,8 @@ Collection: nginx
 Display (same as the example):
 first line: x logs where x is the number of documents in this collection
 second line: Methods:
-5 lines with the number of documents with the 
-method = ["GET", "POST", "PUT", "PATCH", "DELETE"] in this order 
+5 lines with the number of documents with the
+method = ["GET", "POST", "PUT", "PATCH", "DELETE"] in this order
 (see example below - warning: it’s a tabulation before each line)
 one line with the number of documents with:
 method=GET
@@ -32,7 +32,8 @@ def printLog():
     print(f'\tmethod PATCH: {nginx.find({"method": "PATCH"}).count()}')
     print(f'\tmethod DELETE: {nginx.find({"method": "DELETE"}).count()}')
     print(f'\tmethod PATCH: {nginx.find({"method": "PATCH"}).count()}')
-    print(f'{nginx.find({"method": "GET", "path": "/status"}).count()} status check')
+    print(f'{nginx.find({"method": "GET", "path": "/status"}).count()}'
+          f' status check')
 
 
 if __name__ == "__main__":
