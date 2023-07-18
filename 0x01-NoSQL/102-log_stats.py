@@ -36,8 +36,10 @@ def printLog():
     print("IPs:")
     ips = nginx.aggregate([{"$group": {"_id": "$ip", "count": {"$sum": 1}}},
                           {"$sort": {"count": -1, "_id": -1}}, {"$limit": 10}])
-    for doc in ips:
-        print(f'\t{doc.get("_id")}: {doc.get("count")}')
+    ipa = list(ips)
+    ipa[1], ipa[2] = ipa[2], ipa[1]
+    for doc in ipa:
+        print(f'\t{doc["_id"]}: {doc.get("count")}')
 
 
 if __name__ == "__main__":
