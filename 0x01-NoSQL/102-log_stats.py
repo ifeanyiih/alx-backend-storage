@@ -26,13 +26,16 @@ def printLog():
     """Prints the stats about Nginx stored in mongodb"""
     print(f"{nginx.count()} logs")
     print("Methods:")
-    print(f'\tmethod GET: {nginx.find({"method": "GET"}).count()}')
-    print(f'\tmethod POST: {nginx.find({"method": "POST"}).count()}')
-    print(f'\tmethod PUT: {nginx.find({"method": "PUT"}).count()}')
-    print(f'\tmethod PATCH: {nginx.find({"method": "PATCH"}).count()}')
-    print(f'\tmethod DELETE: {nginx.find({"method": "DELETE"}).count()}')
-    print(f'{nginx.find({"method": "GET", "path": "/status"}).count()}'
-          f' status check')
+    print(f'\tmethod GET: {nginx.find({"method": "GET"}).count_documents()}')
+    print(f'\tmethod POST: {nginx.find({"method": "POST"}).count_documents()}')
+    print(f'\tmethod PUT: {nginx.find({"method": "PUT"}).count_documents()}')
+    print(f'\tmethod PATCH: '
+          f'{nginx.find({"method": "PATCH"}).count_documents()}')
+    print(f'\tmethod DELETE: '
+          f'{nginx.find({"method": "DELETE"}).count_documents()}')
+    print(
+        f"{nginx.find({'method': 'GET', 'path': '/status'}).count_documents()}"
+        f" status check")
     print("IPs:")
     ips = nginx.aggregate([{"$sortByCount": "$ip"}, {"$limit": 10}])
     for doc in ips:
