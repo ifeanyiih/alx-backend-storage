@@ -39,10 +39,7 @@ def count_calls(f: Callable) -> Callable:
     def wrapper(*args: list, **kwds: dict) -> None:
         """Increments the count for key f.__qualname__
         every time method is called"""
-        if args[0]._redis.get(f.__qualname__) is None:
-            args[0]._redis.set(f.__qualname__, 1)
-        else:
-            args[0]._redis.incr(f.__qualname__, 1)
+        args[0]._redis.incr(f.__qualname__, 1)
         return f(*args, **kwds)
 
     return wrapper
