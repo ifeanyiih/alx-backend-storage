@@ -38,6 +38,8 @@ class Cache:
         Returns:
             (str): the generated key
         """
+        if type(data) not in [str, bytes, int, float]:
+            return None
         key: str = str(uuid4())
         self._redis.set(key, data)
         return key
