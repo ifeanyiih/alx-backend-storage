@@ -26,8 +26,26 @@ Also, implement 2 new methods: get_str and get_int that will automatically
 parametrize Cache.get with the correct conversion function.
 """
 from typing import Union, Callable, Optional
+from functools import wraps
 from uuid import uuid4
 from redis import Redis
+
+
+def count_calls(f: Callable) -> Callable:
+    """Takes a functiona s parameter and
+    returns a function. It counts how many times methods
+    of Cache class are called"""
+    @wraps(f)
+    def wrapper(*args: list, **kwds: dict) -> None:
+        """Increments the count for key f.__qualname__
+        every time method is called"""
+        if args[0]._redis.get(f.__qualname__) is None:
+            args[0]._redis.set(f.__qualname__, 1)
+        else:
+            args[0]._redis.incr(f.__qualname__, 1)
+        return f(*args, **kwds)
+
+    return wrapper
 
 
 class Cache:
@@ -44,6 +62,7 @@ class Cache:
         self._redis: Redis = Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """stores data in a Redis data base using a
         randomly generated key, returns the key
@@ -58,9 +77,10 @@ class Cache:
         return key
 
     def get(self, key: str,
-            fn: Callable[[bytes],
-                         Optional[Union[str, bytes, int,
-                                  float]]]) -> Union[str, bytes, int, float]:
+            fn: Optional[Callable[[bytes],
+                         Union[str, bytes, int,
+                                  float]]] = None) -> Union[str,
+                                                            bytes, int, float]:
         """Gets a value from the redis store using the key
         and converts back to the type using the optional callable
         Args:
