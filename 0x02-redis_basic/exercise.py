@@ -9,8 +9,23 @@ input data in Redis using the random key and return the key.
 
 Type-annotate store correctly. Remember that data can be a str, bytes,
 int or float
+
+
+Redis only allows to store string, bytes and numbers (and lists thereof).
+Whatever you store as single elements, it will be returned as a byte string.
+Hence if you store "a" as a UTF-8 string, it will be returned as b"a" when
+retrieved from the server.
+
+In this exercise we will create a get method that take a key string argument
+and an optional Callable argument named fn. This callable will be used to
+convert the data back to the desired format.
+
+Remember to conserve the original Redis.get behavior if the key does not exist.
+
+Also, implement 2 new methods: get_str and get_int that will automatically
+parametrize Cache.get with the correct conversion function.
 """
-from typing import Union
+from typing import Union, Callable, Optional
 from uuid import uuid4
 from redis import Redis
 
@@ -38,8 +53,22 @@ class Cache:
         Returns:
             (str): the generated key
         """
-        if type(data) not in [str, bytes, int, float]:
-            return str(uuid4())
         key: str = str(uuid4())
         self._redis.set(key, data)
         return key
+
+    def get(self, key: str,
+            fn: Callable[[bytes],
+                         Optional[Union[str, bytes, int,
+                                  float]]]) -> Union[str, bytes, int, float]:
+        """Gets a value from the redis store using the key
+        and converts back to the type using the optional callable
+        Args:
+            key (str): key to get data with
+            fn (function): an optional Callable
+        Returns:
+            returns data with required type or bytes type
+        """
+        if fn:
+            return fn(self._redis.get(key))
+        return self._redis.get(key)
