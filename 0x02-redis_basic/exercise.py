@@ -31,16 +31,16 @@ from uuid import uuid4
 import redis
 
 
-def count_calls(f: Callable) -> Callable:
+def count_calls(method: Callable) -> Callable:
     """Takes a functiona s parameter and
     returns a function. It counts how many times methods
     of Cache class are called"""
-    @wraps(f)
+    @wraps(method)
     def wrapper(self, *args: list, **kwds: dict) -> None:
         """Increments the count for key f.__qualname__
         every time method is called"""
-        self._redis.incr(f.__qualname__, 1)
-        return f(self, *args, **kwds)
+        self._redis.incr(method.__qualname__, 1)
+        return method(self, *args, **kwds)
 
     return wrapper
 
