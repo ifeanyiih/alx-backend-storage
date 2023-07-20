@@ -56,7 +56,7 @@ class Cache:
     def __init__(self) -> None:
         """Initializes the class and creates
         the redis instance"""
-        _redis: Redis = redis.Redis()
+        self._redis = redis.Redis()
         self._redis.flushdb()
 
     @count_calls
