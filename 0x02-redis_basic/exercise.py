@@ -56,8 +56,8 @@ class Cache:
     def __init__(self) -> None:
         """Initializes the class and creates
         the redis instance"""
-        self._redis: Redis = redis.Redis()
-        self._redis.flushdb()
+        self.__redis: Redis = redis.Redis()
+        self.__redis.flushdb()
 
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
@@ -70,7 +70,7 @@ class Cache:
             (str): the generated key
         """
         key: str = str(uuid4())
-        self._redis.set(key, data)
+        self.__redis.set(key, data)
         return key
 
     def get(self, key: str,
@@ -88,7 +88,7 @@ class Cache:
         """
         if fn:
             return fn(self._redis.get(key))
-        return self._redis.get(key)
+        return self.__redis.get(key)
 
     def get_str(self, value: bytes) -> str:
         """Converts the value to string type"""
