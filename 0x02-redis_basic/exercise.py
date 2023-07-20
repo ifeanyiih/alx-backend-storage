@@ -36,11 +36,11 @@ def count_calls(f: Callable) -> Callable:
     returns a function. It counts how many times methods
     of Cache class are called"""
     @wraps(f)
-    def wrapper(*args: list, **kwds: dict) -> None:
+    def wrapper(self, *args: list, **kwds: dict) -> None:
         """Increments the count for key f.__qualname__
         every time method is called"""
-        args[0]._redis.incr(f.__qualname__, 1)
-        return f(*args, **kwds)
+        self._redis.incr(f.__qualname__, 1)
+        return f(self, *args, **kwds)
 
     return wrapper
 
