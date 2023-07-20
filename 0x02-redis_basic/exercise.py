@@ -28,7 +28,7 @@ parametrize Cache.get with the correct conversion function.
 from typing import Union, Callable, Optional
 from functools import wraps
 from uuid import uuid4
-from redis import Redis
+import redis
 
 
 def count_calls(f: Callable) -> Callable:
@@ -56,7 +56,7 @@ class Cache:
     def __init__(self) -> None:
         """Initializes the class and creates
         the redis instance"""
-        self._redis: Redis = Redis()
+        self._redis: Redis = redis.Redis()
         self._redis.flushdb()
 
     @count_calls
