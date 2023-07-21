@@ -49,6 +49,13 @@ Execute the wrapped function to retrieve the output. Store the output using
 rpush in the "...:outputs" list, then return the output.
 
 Decorate Cache.store with call_history
+
+************************
+
+mplement a replay function to display the history of calls of a particular
+function.
+
+Use keys generated in previous tasks to generate the following output
 """
 from typing import Union, Callable, Optional
 from functools import wraps
@@ -141,3 +148,20 @@ class Cache:
     def get_int(self, value: bytes) -> int:
         """Converts the value to int type"""
         return int(value.decode('utf-8'))
+
+
+def replay(method: Callable) -> None:
+    """Display the history of calls of a particular
+    function
+    Args:
+        method : a python class method
+    """
+    redis_ = redis.Redis()
+    print(f"{method.__qualname__} was called "
+          f"{int(redis_.get(method.__qualname__))} times:")
+    history = zip(redis_.lrange(f"{method.__qualname__}:inputs", 0, -1),
+                  redis_.lrange(f"{method.__qualname__}:outputs", 0, -1))
+    for key, val in history:
+        key_dec = key.decode('utf-8')
+        val_dec = val.decode('utf-8')
+        print(f"{method.__qualname__}(*{key_dec}) -> {val_dec}")
