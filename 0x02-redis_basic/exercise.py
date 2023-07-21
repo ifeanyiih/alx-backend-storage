@@ -24,6 +24,31 @@ Remember to conserve the original Redis.get behavior if the key does not exist.
 
 Also, implement 2 new methods: get_str and get_int that will automatically
 parametrize Cache.get with the correct conversion function.
+
+
+Familiarize yourself with redis commands RPUSH, LPUSH, LRANGE, etc.
+
+In this task, we will define a call_history decorator to store the history
+of inputs and outputs for a particular function.
+
+Everytime the original function will be called, we will add its input
+parameters to one list in redis, and store its output into another list.
+
+In call_history, use the decorated function’s qualified name and append
+":inputs" and ":outputs" to create input and output list keys, respectively.
+
+call_history has a single parameter named method that is a Callable and returns
+a Callable.
+
+In the new function that the decorator will return, use rpush to append the
+input arguments. Remember that Redis can only store strings, bytes and numbers.
+Therefore, we can simply use str(args) to normalize. We can ignore potential
+kwargs for now.
+
+Execute the wrapped function to retrieve the output. Store the output using
+rpush in the "...:outputs" list, then return the output.
+
+Decorate Cache.store with call_history
 """
 from typing import Union, Callable, Optional
 from functools import wraps
@@ -45,6 +70,24 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
+def call_history(method: Callable) -> Callable:
+    """Stores the history of inputs and outputs for a
+    particular function
+    Args:
+        method (a python method)
+    Returns:
+        returns a function (method) in this case
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs) -> None:
+        """A wrapper function for decorating the method"""
+        self._redis.rpush(f"{method.__qualname__}:inputs", str(args))
+        output = method(self, *args, **kwargs)
+        self._redis.rpush(f"{method.__qualname__}:outputs", str(output))
+        return output
+    return wrapper
+
+
 class Cache:
     """Stores an instance of Redis client
     as a private variable and has methods to perform
@@ -60,6 +103,7 @@ class Cache:
         self._redis.flushdb()
 
     @count_calls
+    @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """stores data in a Redis data base using a
         randomly generated key, returns the key
