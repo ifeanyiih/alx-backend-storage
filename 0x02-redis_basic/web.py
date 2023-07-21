@@ -13,13 +13,10 @@ Inside get_page track how many times a particular URL was accessed in the key
 Tip: Use http://slowwly.robertomurray.co.uk to simulate a slow response and
 test your caching.
 """
-from redis import Redis
+import redis
 import requests
 from typing import Callable
 from functools import wraps
-
-
-redis: Redis = Redis()
 
 
 def call_count(method: Callable) -> Callable:
@@ -27,6 +24,10 @@ def call_count(method: Callable) -> Callable:
     @wraps(method)
     def wrapper(*args, **kwargs):
         """wraps the method"""
+        redis_ = redis.Redis()
+        key = f"{args[0]}"
+        redis_.incr(key, 1)
+        redis_.expire(key, 10)
         return method(*args, **kwargs)
     return wrapper
 
@@ -39,9 +40,6 @@ def get_page(url: str) -> str:
     Returns:
         (str): the HTML content of the url
     """
-    key: str = f"count:{url}"
-    redis.incr(key, 1)
-    redis.expire(key, 10)
     get = call_count(requests.get)
     req = get(url)
     return req.text
