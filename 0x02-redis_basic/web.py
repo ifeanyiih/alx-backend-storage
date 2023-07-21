@@ -19,7 +19,7 @@ from typing import Callable
 from functools import wraps
 
 
-redis = Redis()
+redis: Redis = Redis()
 
 
 def call_count(method: Callable) -> Callable:
@@ -39,7 +39,7 @@ def get_page(url: str) -> str:
     Returns:
         (str): the HTML content of the url
     """
-    key = f"count:{url}"
+    key: str = f"count:{url}"
     redis.incr(key, 1)
     redis.expire(key, 10)
     get = call_count(requests.get)
