@@ -14,7 +14,6 @@ Tip: Use http://slowwly.robertomurray.co.uk to simulate a slow response and
 test your caching.
 """
 import redis
-import html
 import requests
 from typing import Callable
 from functools import wraps
@@ -43,4 +42,4 @@ def get_page(url: str) -> str:
     """
     get = call_count(requests.get)
     req = get(url)
-    return html.unescape(req.text)
+    return req.text
