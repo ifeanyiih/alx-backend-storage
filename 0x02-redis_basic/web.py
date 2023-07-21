@@ -17,7 +17,6 @@ from redis import Redis
 import requests
 from typing import Callable
 from functools import wraps
-
 redis = Redis()
 
 
@@ -40,7 +39,7 @@ def get_page(url: str) -> str:
     """
     get = call_count(requests.get)
     req = get(url)
-    key = f"count:{url}"
+    key = f"{url}"
     redis.incr(key, 1)
     redis.expire(key, 10)
     return req.text
