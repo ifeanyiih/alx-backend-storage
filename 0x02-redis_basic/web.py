@@ -25,7 +25,7 @@ def call_count(method: Callable) -> Callable:
     def wrapper(*args, **kwargs):
         """wraps the method"""
         redis_ = redis.Redis()
-        key = f"{args[0]}"
+        key = f"count:{args[0]}"
         redis_.incr(key, 1)
         redis_.expire(key, 10)
         return method(*args, **kwargs)
@@ -43,3 +43,7 @@ def get_page(url: str) -> str:
     get = call_count(requests.get)
     req = get(url)
     return req.text
+
+
+if __name__ == "__main__":
+    get_page('http://slowwly.robertomurray.co.uk')
